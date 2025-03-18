@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Escala</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/inputmask@5.0.6/dist/inputmask.min.js"></script>
+    <style>
+        
+        body.dark-mode {
+            background-color: #121212;
+            color: white;
+        }
+
+        .dark-mode .container {
+            background-color: #1e1e1e;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .dark-mode .form-control,
+        .dark-mode .form-select {
+            background-color: #333;
+            color: white;
+            border-color: #555;
+        }
+
+        .dark-mode .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .dark-mode .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #004085;
+        }
+
+        /* Estilo para o botão de alternância */
+        #toggle-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <button id="toggle-btn" onclick="toggleDarkMode()">🌙</button>
+        
+        <h2>Gerador de Escala</h2>
+
+        <form action="/" method="POST" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label class="form-label">Selecione o arquivo de matrículas:</label>
+                <input type="file" name="file" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Selecione o mês e o ano:</label>
+                
+                <input type="month" name="mes_ano" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Selecione os dias para excluir:</label>
+                <div id="dias-container"></div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Selecione os dias da semana para gerar a escala:</label>
+                <div>
+                    <input type="checkbox" name="dias_selecionados[]" value="0"> Segunda-feira
+                    <input type="checkbox" name="dias_selecionados[]" value="1"> Terça-feira
+                    <input type="checkbox" name="dias_selecionados[]" value="2"> Quarta-feira
+                    <input type="checkbox" name="dias_selecionados[]" value="3"> Quinta-feira
+                    <input type="checkbox" name="dias_selecionados[]" value="4"> Sexta-feira
+                    <input type="checkbox" name="dias_selecionados[]" value="5"> Sábado
+                    <input type="checkbox" name="dias_selecionados[]" value="6"> Domingo
+                </div>
+            </div>
+
+            <label class="form-label">Horários para cada dia da semana:</label>
+            <div class="row">
+                {% for i, dia in [('0', 'Segunda'), ('1', 'Terça'), ('2', 'Quarta'), ('3', 'Quinta'), ('4', 'Sexta'), ('5', 'Sábado'), ('6', 'Domingo')] %}
+                    <div class="col">
+                        <strong>{{ dia }}</strong>
+                        <input type="text" name="horario_{{ i }}_1" placeholder="Entrada" class="form-control horario-mask">
+                        <input type="text" name="horario_{{ i }}_2" placeholder="Saída Intervalo" class="form-control horario-mask">
+                        <input type="text" name="horario_{{ i }}_3" placeholder="Retorno Intervalo" class="form-control horario-mask">
+                        <input type="text" name="horario_{{ i }}_4" placeholder="Saída" class="form-control horario-mask">
+                    </div>
+                {% endfor %}
+            </div>
+
+            <button type="submit" class="btn btn-primary mt-3">Gerar Escala</button>
+        </form>
+    </div>
+
+    <script>
+        let container = document.getElementById("dias-container");
+        for (let i = 1; i <= 31; i++) {
+            let checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.name = "dias_excluir[]";
+            checkbox.value = i;
+            container.appendChild(checkbox);
+            container.appendChild(document.createTextNode(" " + i + " "));
+        }
+
+        
+        Inputmask("99:99").mask(document.querySelectorAll('.horario-mask'));
+
+        
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+
+            
+            const btn = document.getElementById("toggle-btn");
+            if (document.body.classList.contains('dark-mode')) {
+                btn.innerHTML = "🌞"; 
+            } else {
+                btn.innerHTML = "🌙"; 
+            }
+        }
+    </script>
+</body>
+</html>
